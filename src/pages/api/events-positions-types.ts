@@ -24,3 +24,9 @@ export interface Tradeposition {
   quantity: number;
   events: TradeEvent[];
 }
+
+export enum eventAction {
+  "SELL" = "SELL",
+  "BUY" = "BUY",
+  "CANCEL" = "CANCEL",
+}
