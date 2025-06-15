@@ -1,0 +1,26 @@
+// Request body types
+
+export interface TradeEvents {
+  events: TradeEvent[];
+}
+
+export interface TradeEvent {
+  id: number;
+  action: string;
+  account: string;
+  security: string;
+  quantity: number;
+}
+
+// Response body types
+
+export interface TradePositions {
+  positions: Tradeposition[];
+}
+
+export interface Tradeposition {
+  account: string;
+  security: string;
+  quantity: number;
+  events: TradeEvent[];
+}
