@@ -6,17 +6,17 @@ import {
   TradePositions,
 } from "./events-positions-types";
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<TradePositions>
 ) {
-  let response = getPositions(req.body);
+  let response = await getPositions(req.body);
   res.status(201).json(response);
 }
 
 function getPositions(payload: string): TradePositions {
   const result: TradePositions = { positions: [] };
-  const events: TradeEvent[] = JSON.parse(payload).events;
+  const events: TradeEvent[] = JSON.parse(payload);
   const positionsMap = new Map();
 
   events.forEach((event: TradeEvent) => {

@@ -2,3 +2,35 @@
   --background: #ffffff;
   --foreground: #171717;
 }
+
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+nav ul {
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav li {
+  margin: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #000;
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 0.2);
+  padding: 10px;
+  display: block;
+}
+
+form input {
+  margin: 10px;
+}

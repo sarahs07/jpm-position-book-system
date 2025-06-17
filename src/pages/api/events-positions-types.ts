@@ -15,10 +15,10 @@ export interface TradeEvent {
 // Response body types
 
 export interface TradePositions {
-  positions: Tradeposition[];
+  positions: TradePosition[];
 }
 
-export interface Tradeposition {
+export interface TradePosition {
   account: string;
   security: string;
   quantity: number;
