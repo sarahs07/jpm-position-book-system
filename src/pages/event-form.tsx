@@ -46,7 +46,6 @@ export default function CreateEventForm() {
 
   return (
     <>
-      <Navbar />
       <h3>Create Event</h3>
       <div>
         <h2>Submit New Event</h2>

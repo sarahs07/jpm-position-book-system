@@ -5,13 +5,42 @@ import {
   TradeEvent,
   TradePositions,
 } from "./events-positions-types";
+import { Server as IOServer } from "socket.io";
+import { Server as HTTPServer } from "http";
+
+type NextApiResponseWithSocket = NextApiResponse & {
+  socket: {
+    server: HTTPServer & {
+      io: IOServer;
+    };
+  };
+};
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<TradePositions>
+  res: NextApiResponseWithSocket
 ) {
-  let response = await getPositions(req.body);
-  res.status(201).json(response);
+  const io = new IOServer(res.socket.server);
+  let result: TradePositions | [] = [];
+  if (req.body) {
+    result = getPositions(req.body);
+    // Emitting to client with updated positions data
+    res.socket.server.io.emit("update-input", result);
+    res.status(201).json(result);
+  }
+  if (res.socket.server.io) {
+    console.log("Socket is already running");
+  } else {
+    console.log("Initializing socket server");
+    res.socket.server.io = io;
+
+    io.on("connection", (socket) => {
+      console.log("Client connected");
+      socket.on("disconnect", () => {
+        console.log("Client disconnected");
+      });
+    });
+  }
 }
 
 function getPositions(payload: string): TradePositions {
