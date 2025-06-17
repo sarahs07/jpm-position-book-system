@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/nav-bar";
 import { io } from "socket.io-client";
-import PositionSummary from "./position-summary";
-import CreateEventForm from "./event-form";
+import MuiTabs from "@/components/mui-tabs";
 
 let socket;
 
@@ -28,10 +26,7 @@ export default function index() {
 
   return (
     <>
-      <div className="container">
-        <PositionSummary positions={positionsData} />
-        <CreateEventForm />
-      </div>
+      <MuiTabs positions={positionsData} />
     </>
   );
 }

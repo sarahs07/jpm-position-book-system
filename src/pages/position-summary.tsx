@@ -17,15 +17,15 @@ export default function PositionSummary({
 
   return (
     <>
-      <Paper sx={{ height: 400, width: "100%" }}>
+      <div className="container">
         <DataGrid
           getRowId={getRowId}
           rows={positions}
           columns={columns}
           checkboxSelection
-          sx={{ border: 0 }}
+          sx={{ width: "70%" }}
         />
-      </Paper>
+      </div>
     </>
   );
 }

@@ -1,4 +1,3 @@
-import Navbar from "@/components/nav-bar";
 import React, { FormEvent } from "react";
 import { TradeEvent } from "./api/events-positions-types";
 
@@ -46,9 +45,7 @@ export default function CreateEventForm() {
 
   return (
     <>
-      <h3>Create Event</h3>
-      <div>
-        <h2>Submit New Event</h2>
+      <div className="container">
         <form onSubmit={handleSubmit}>
           <input type="number" name="id" placeholder="ID" required />
           <select name="action">
