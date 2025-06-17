@@ -5,7 +5,7 @@ import React from "react";
 export default function Navbar({}) {
   return (
     <>
-      <nav>
+      <nav className="container">
         <ul>
           <li>
             <Link href="/position-summary">Position Summary</Link>

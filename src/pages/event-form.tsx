@@ -1,4 +1,4 @@
-import Navbar from "@/pages/components/shared/nav-bar";
+import Navbar from "@/components/nav-bar";
 import React, { FormEvent } from "react";
 import { TradeEvent } from "./api/events-positions-types";
 
