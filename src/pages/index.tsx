@@ -7,7 +7,7 @@ import CreateEventForm from "./event-form";
 let socket;
 
 export default function index() {
-  const [positionsData, setPositionsData] = useState(null);
+  const [positionsData, setPositionsData] = useState([]);
 
   useEffect(() => socketInitializer(), []);
 
