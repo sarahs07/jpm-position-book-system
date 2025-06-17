@@ -20,27 +20,29 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseWithSocket
 ) {
-  const io = new IOServer(res.socket.server);
-  let result: TradePositions | [] = [];
-  if (req.body) {
-    result = getPositions(req.body);
-    // Emitting to client with updated positions data
-    res.socket.server.io.emit("update-input", result);
-    res.status(201).json(result);
-  }
-  if (res.socket.server.io) {
-    console.log("Socket is already running");
-  } else {
-    console.log("Initializing socket server");
-    res.socket.server.io = io;
+  if (!res.socket.server.io) {
+    console.log("Initializing Socket.IO server...");
+    const io = new IOServer(res.socket.server);
 
     io.on("connection", (socket) => {
       console.log("Client connected");
+
       socket.on("disconnect", () => {
         console.log("Client disconnected");
       });
     });
+
+    res.socket.server.io = io;
   }
+
+  // Only handle POST with valid body
+  if (req.method === "POST" && req.body) {
+    const positions = getPositions(req.body);
+    res.socket.server.io.emit("update-input", positions);
+    return res.status(201).json(positions);
+  }
+
+  return res.status(200).end("Socket.IO is running");
 }
 
 function getPositions(payload: string): TradePositions {
