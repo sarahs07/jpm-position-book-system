@@ -1,8 +1,8 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
-I started off by creating a separate Express JS backend to serve the api end point but then took the opportunity to explore and leverage Next JS framework as it seem to be a good all-round framework that would fit the purpose. 
+I started off by creating a separate Express JS backend to serve the api end point but then took the opportunity to leverage Next JS framework as it seemed to be a good all-round framework that would fit the purpose. 
 
-It contains both the backend endpoint (/api/events) and the frontend application which contains the positions summary view and a form to add new event.
+It contains both the backend endpoint (/api/events) and the frontend application which contains the positions summary view and a form to add new event. Due to time constraints, kept one form with different actions (Buy/Sell/Cancel) which can be further split with relevant fields as in the proposed wireframe with left navigation.
 
 ## Getting Started
 
