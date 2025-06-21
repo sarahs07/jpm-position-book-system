@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import MuiTabs from "@/components/mui-tabs";
 
-let socket;
-
 export default function index() {
   const [positionsData, setPositionsData] = useState([]);
-
+  let socket;
   useEffect(() => socketInitializer(), []);
 
   const socketInitializer = () => {

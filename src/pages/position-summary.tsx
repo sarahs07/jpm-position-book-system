@@ -4,8 +4,6 @@ import React from "react";
 import { TradePosition, TradePositions } from "./api/events-positions-types";
 import { columns } from "../constants";
 
-let socket;
-
 export default function PositionSummary({
   positions,
 }: {

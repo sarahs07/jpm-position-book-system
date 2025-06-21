@@ -4,11 +4,11 @@ import CreateEventForm from "@/pages/event-form";
 import { TradePosition } from "@/pages/api/events-positions-types";
 import PositionSummary from "@/pages/position-summary";
 
-interface TabPanelProps {
+type TabPanelProps = {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
+};
 
 function TabPanel({ children, value, index }: TabPanelProps) {
   return (

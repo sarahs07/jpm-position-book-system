@@ -8,14 +8,14 @@ export enum eventAction {
 }
 const apiURL = "http://localhost:3000/api/events";
 
-const events: TradeEvent[] = [];
-
 export default function CreateEventForm() {
+  const events: TradeEvent[] = [];
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData: FormData = new FormData(e.currentTarget);
-
+    // TODO: Move handling of data to useState
     events.push(mapFormValues(formData));
 
     try {
