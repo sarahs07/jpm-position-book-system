@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import {
   eventAction,
   TradeEvent,
+  TradePosition,
   TradePositions,
 } from "./events-positions-types";
 import { Server as IOServer } from "socket.io";
@@ -25,37 +26,44 @@ export default async function handler(
     const io = new IOServer(res.socket.server);
 
     io.on("connection", (socket) => {
-      console.log("Client connected");
+      console.log("Client connected", socket.id);
 
       socket.on("disconnect", () => {
-        console.log("Client disconnected");
+        console.log("Client disconnected", socket.id);
       });
     });
 
     res.socket.server.io = io;
+  } else {
+    console.log("Socket.IO server already running");
   }
 
   // Only handle POST with valid body
-  if (req.method === "POST" && req.body) {
-    const positions = getPositions(req.body);
-    res.socket.server.io.emit("update-input", positions);
-    return res.status(201).json(positions);
+  if (req.method === "POST") {
+    try {
+      console.log("Emitting updated positions:", req.body);
+      const positions = getPositions([req.body]);
+
+      res.socket.server.io.emit("update-input", positions);
+      return res.status(201).json(positions);
+    } catch (e) {
+      console.error("Error processing events:", e);
+      return res.status(400).end(`Invalid request body ${e}`);
+    }
   }
 
   return res.status(200).end("Socket.IO is running");
 }
 
-function getPositions(payload: string): TradePositions {
-  const result: TradePositions = { positions: [] };
-  const events: TradeEvent[] = JSON.parse(payload);
-  const positionsMap = new Map();
+function getPositions(events: TradeEvent[]): TradePositions {
+  const positionsMap = new Map<string, TradePosition>();
 
   events.forEach((event: TradeEvent) => {
     let { account, action, security, quantity } = event;
     let eventKey = `${account}-${security}`;
 
     if (positionsMap.has(eventKey)) {
-      let position = positionsMap.get(eventKey);
+      let position = positionsMap.get(eventKey)!;
       position.quantity = updateQuantity(action, position.quantity, quantity);
       position.events.push(event);
     } else {
@@ -68,24 +76,24 @@ function getPositions(payload: string): TradePositions {
     }
   });
 
-  positionsMap.forEach((position) => {
-    result.positions.push(position);
-  });
-
-  return result;
+  return { positions: Array.from(positionsMap.values()) };
 }
 
 function updateQuantity(
   action: string,
-  currentQuanity: number,
+  currentQuantity: number,
   quantity: number
 ): number {
-  if (action === eventAction.BUY) {
-    currentQuanity += quantity;
-  } else if (action === eventAction.SELL) {
-    currentQuanity -= quantity;
-  } else if (action === eventAction.CANCEL) {
-    currentQuanity = 0;
+  switch (action) {
+    case eventAction.BUY:
+      currentQuantity += quantity;
+    case eventAction.SELL:
+      currentQuantity -= quantity;
+    case eventAction.CANCEL:
+      currentQuantity = 0;
+      break;
+    default:
+      throw new Error(`Invalid action type: ${action}`);
   }
-  return currentQuanity;
+  return currentQuantity;
 }

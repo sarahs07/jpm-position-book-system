@@ -1,69 +1,85 @@
 import React, { FormEvent } from "react";
-import { TradeEvent } from "./api/events-positions-types";
+import { eventAction, TradeEvent } from "./api/events-positions-types";
 
-export enum eventAction {
-  "SELL" = "SELL",
-  "BUY" = "BUY",
-  "CANCEL" = "CANCEL",
-}
-const apiURL = "http://localhost:3000/api/events";
+const apiURL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export default function CreateEventForm() {
-  const events: TradeEvent[] = [];
+  const [events, setEvents] = React.useState<TradeEvent[]>([]);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(
+    null
+  );
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
-    const formData: FormData = new FormData(e.currentTarget);
-    // TODO: Move handling of data to useState
-    events.push(mapFormValues(formData));
+    const formData = new FormData(e.currentTarget);
+    const newEvent = mapFormValues(formData);
+    setEvents((prev) => [...prev, newEvent]);
+
+    if (!apiURL) {
+      setErrorMessage("API URL not configured in environment.");
+      return;
+    }
 
     try {
       const response = await fetch(apiURL, {
         method: "POST",
-        body: JSON.stringify(events),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newEvent),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit the data. Please try again.");
+        throw new Error(
+          `Server responded with ${response.status}: ${response.statusText}`
+        );
       }
+
+      setSuccessMessage("Event submitted successfully!");
     } catch (error) {
       console.error(error);
-    } finally {
+      setErrorMessage("An error occurred while submitting the form.");
     }
   };
 
-  function mapFormValues(formData: FormData) {
+  function mapFormValues(formData: FormData): TradeEvent {
     return {
-      id: parseInt(formData.get("id") as string),
-      account: formData.get("account") as string,
-      action: formData.get("action") as string,
-      security: formData.get("security") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      id: Date.now(),
+      account: (formData.get("account") as string) || "",
+      action: (formData.get("action") as string) || "",
+      security: (formData.get("security") as string) || "",
+      quantity: parseInt(formData.get("quantity") as string) || 0,
     };
   }
 
+  const actions = Object.values(eventAction).filter(
+    (v) => typeof v === "string"
+  );
+
   return (
-    <>
-      <div className="container">
-        <form onSubmit={handleSubmit}>
-          <input type="number" name="id" placeholder="ID" required />
-          <select name="action">
-            <option value="BUY">BUY</option>
-            <option value="SELL">SELL</option>
-            <option value="CANCEL">CANCEL</option>
-          </select>
-          <input type="text" name="account" placeholder="Account" required />
-          <input type="text" name="security" placeholder="Security" required />
-          <input
-            type="number"
-            name="quantity"
-            placeholder="Quantity"
-            required
-          />
-          <button type="submit">Add Event</button>
-        </form>
-      </div>
-    </>
+    <div className="container">
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
+      {successMessage && (
+        <div className="success-message">{successMessage}</div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <select name="action" required>
+          {actions.map((action) => (
+            <option key={action} value={action}>
+              {action}
+            </option>
+          ))}
+        </select>
+
+        <input type="text" name="account" placeholder="Account" required />
+        <input type="text" name="security" placeholder="Security" required />
+        <input type="number" name="quantity" placeholder="Quantity" required />
+
+        <button type="submit">Add Event</button>
+      </form>
+    </div>
   );
 }

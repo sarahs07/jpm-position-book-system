@@ -26,3 +26,9 @@ export const columns: GridColDef[] = [
     align: "center",
   },
 ];
+
+export enum eventAction {
+  "SELL" = "SELL",
+  "BUY" = "BUY",
+  "CANCEL" = "CANCEL",
+}
